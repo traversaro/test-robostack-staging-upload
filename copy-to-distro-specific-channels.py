@@ -65,8 +65,12 @@ def main():
         print(f"Processing platform: {platform}")
 
         # Extract packages from source and destination
-        source_packages = source_repodata[platform].get("packages", {})
-        destination_packages = destination_repodata[platform].get("packages", {})
+        source_packages = {}
+        source_packages.update(source_repodata[platform].get("packages", {}))
+        source_packages.update(source_repodata[platform].get("packages.conda", {}))
+        destination_packages = {}
+        destination_packages.update(destination_repodata[platform].get("packages", {}))
+        destination_packages.update(destination_repodata[platform].get("packages.conda", {}))
         destination_keys = {
             (pkg_name, pkg_data["version"], pkg_data["build"])
             for pkg_name, pkg_data in destination_packages.items()
