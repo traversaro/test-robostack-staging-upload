@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  copy-packages-noetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+      - env:
+          ANACONDA_TOKEN: ${{ secrets.ROBOSTACK_NOETIC_TRAVERSARO_TOKEN }}
+        run: |
+          python copy-to-distro-specific-channels.py noetic
+        shell: pixi run bash -e {0}
+
+  copy-packages-humble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
+      - env:
+          ANACONDA_TOKEN: ${{ secrets.ROBOSTACK_HUMBLE_TRAVERSARO_TOKEN }}
+        run: |
+          python copy-to-distro-specific-channels.py humble
+        shell: pixi run bash -e {0}
