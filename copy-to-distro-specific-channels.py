@@ -90,7 +90,6 @@ def main():
             version = pkg_data["version"]
             build = pkg_data["build"]
             package_name_simple = pkg_data["name"]
-            print(pkg_data)
 
             if (package_name, version, build) not in destination_keys:
                 upload_package(package_name_simple, package_name, version, build, platform, destination_channel)
