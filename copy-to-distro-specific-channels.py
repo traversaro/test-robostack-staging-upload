@@ -1,6 +1,7 @@
 import requests
 import subprocess
 import argparse
+import datetime
 
 # Configuration
 BASE_URL = "https://conda.anaconda.org"
@@ -46,12 +47,20 @@ def main():
         type=str,
         help="The distro upload (e.g., 'humble')"
     )
+    parser.add_argument(
+        "cutoff",
+        type=str,
+        help="Only package built after this cutoff date are uploaded. The cutoff date is a ISO 8601-formatted string."
+    )
     args = parser.parse_args()
     distro = args.distro
 
     destination_channel = f"robostack-{distro}"
     # debug
     destination_channel = f"robostack-{distro}-traversaro"
+
+    # Convert cutoff date to cutoff timestamps
+    cutoff_timestamp = int(datetime.datetime.strptime(args.cutoff, "%Y-%m-%d").timestamp()*1000.0)
 
     # Fetch repodata.json for each platform from source and destination channels
     source_repodata = {}
@@ -76,14 +85,15 @@ def main():
             for pkg_name, pkg_data in destination_packages.items()
         }
 
-        # Filter packages that start with the specified prefix (i.e. ros-<distro>)
+        # Filter packages that belong to the given distro
+        # and are newer then the specified cutoff date
         prefix = 'ros-'+distro
         filtered_packages = {
             pkg_name: pkg_data
             for pkg_name, pkg_data in source_packages.items()
             # This should cover both packages that start with 'ros-<distro>'
             # '(ros|ros2)-<distro>-mutex' packages whose build string contains <distro>
-            if pkg_name.startswith(prefix) or (pkg_data["name"].endswith("distro-mutex") and distro in pkg_data["build"])
+            if (pkg_name.startswith(prefix) or (pkg_data["name"].endswith("distro-mutex") and distro in pkg_data["build"])) and (pkg_data["timestamp"] >= cutoff_timestamp)
         }
 
         print(f"Found {len(filtered_packages)} packages in {SOURCE_CHANNEL}/{platform} that belong to distro {distro}")

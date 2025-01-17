@@ -15,7 +15,7 @@ jobs:
       - env:
           ANACONDA_API_TOKEN: ${{ secrets.ROBOSTACK_NOETIC_TRAVERSARO_TOKEN }}
         run: |
-          python copy-to-distro-specific-channels.py noetic
+          python copy-to-distro-specific-channels.py noetic 2025-01-01
         shell: pixi run bash -e {0}
 
   copy-packages-humble:
@@ -26,5 +26,5 @@ jobs:
       - env:
           ANACONDA_API_TOKEN: ${{ secrets.ROBOSTACK_HUMBLE_TRAVERSARO_TOKEN }}
         run: |
-          python copy-to-distro-specific-channels.py humble
+          python copy-to-distro-specific-channels.py humble 2025-01-01
         shell: pixi run bash -e {0}
